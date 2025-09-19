@@ -2,11 +2,11 @@ import pandas as pd
 import numpy as np
 import math
 import matplotlib as mp
+import matplotlib.pyplot as plt
 
 
-data = pd.read_csv('test.csv')
+data = pd.read_csv('../data/train.csv')
 df = pd.DataFrame(data)
-print(df.head())
 
 class Moving_average:
     ## construct a list of averages per time period
@@ -20,13 +20,15 @@ class Moving_average:
             for col in range(cols):
                 if x == 0:
                     current_average = df.iloc[x, col]
-                    average[x,col] = current_average
+                    average[x,col] = round(current_average,5)
                 else:    
                     current_average = np.sum(df.iloc[0:x+1, col])/(x+1)
-                    average[x,col] = current_average
+                    average[x,col] = round(current_average,5)
         return average                
-    def average_at_T(T):
+    def average_at_T(T, df):
         entry = Moving_average.average_to_T(T,df)
-        return entry[T]
-
-Moving_average.average_to_T(5, df)
+        return entry[T-1]
+    def plot_correlation(df, x, y):
+        plt.scatter(df.get[:,x], df.get[:,y])
+        plt.show()
+Moving_average.plot_correlation(df, 'A', 'B')        
