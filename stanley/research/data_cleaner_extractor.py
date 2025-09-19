@@ -28,7 +28,11 @@ class Moving_average:
     def average_at_T(T, df):
         entry = Moving_average.average_to_T(T,df)
         return entry[T-1]
-    def plot_correlation(df, x, y):
-        plt.scatter(df.get[:,x], df.get[:,y])
-        plt.show()
-Moving_average.plot_correlation(df, 'A', 'B')        
+
+class Correlation:
+    def correlation_matrix(df):
+        return df.corr()
+    def correlation_avergae(df):
+        corr = Moving_average.average_at_T(df.shape[0],df)
+        return Correlation.correlation_matrix(corr) 
+    
