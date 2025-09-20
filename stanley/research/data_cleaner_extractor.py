@@ -112,9 +112,9 @@ class Test_build:
             y1_y2[x] = [value_y1,value_y2]
         return pd.DataFrame(y1_y2).to_csv('stanley/data/preds.csv')
          
-print(test_data.shape)            
+#print(test_data.shape)            
 #print(Test_build.r_value(train_var_data,train_target_val,corr))
-Test_build.generate(test_data,corr)
+#Test_build.generate(test_data,corr)
 
 class Fitting_y1:
     def mean_std(df,variables):
@@ -123,7 +123,18 @@ class Fitting_y1:
             mu_sigma[val] = [np.mean(df.iloc[:,val]),np.std(df.iloc[:,val])]       
         return mu_sigma
      
-def log_normal(x, mu, sigma):
+    def log_normal(x, mu, sigma):
         math.log(math.exp(-0.5*((x-mu)/sigma)^2)/(math.sqrt(2*math.pi*sigma^2)), math.e)
     
+    def scatters(train_data, test_data, variables):
+        max_min_mean_vol_train = np.zeros([len(variables),3])
+        max_min_mean_vol_test = np.zeros([len(variables),3])
+        for var in range(len(variables)):
+            plt.scatter(train_data['time'],train_data.iloc[:,var],alpha=0.2)
+            plt.scatter(test_data['time'],test_data.iloc[:,var],alpha=0.2)
+            plt.show()        
+            max_min_mean_vol_train[var] = [train_data.iloc[:,var].max(),train_data.iloc[:,var].min(),train_data.iloc[:,var].mean(),train_data.iloc[:,var].std()]
+            max_min_mean_vol_test[var] = [test_data.iloc[:,var].max(),test_data.iloc[:,var].min(),test_data.iloc[:,var].mean(),test_data.iloc[:,var].std()]
+        return max_min_mean_vol_test, max_min_mean_vol_train
 
+print(Correlation.correlation_toy1y2(train_data))
