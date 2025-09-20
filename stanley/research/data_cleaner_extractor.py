@@ -137,4 +137,16 @@ class Fitting_y1:
             max_min_mean_vol_test[var] = [test_data.iloc[:,var].max(),test_data.iloc[:,var].min(),test_data.iloc[:,var].mean(),test_data.iloc[:,var].std()]
         return max_min_mean_vol_test, max_min_mean_vol_train
 
-print(Correlation.correlation_toy1y2(train_data))
+no_clean = pd.read_csv("stanley/data/nn_Large_preds.csv")
+no_clean_df = pd.DataFrame(no_clean)
+
+clean = pd.read_csv("stanley/data/preds.csv")
+clean_df = pd.DataFrame(clean)
+plt.plot(no_clean_df['id'], no_clean_df['Y1'])
+plt.plot(no_clean_df['id'], no_clean_df['Y2'])
+plt.show()
+
+plt.plot(clean_df['id'],clean_df['Y1'])
+plt.plot(clean_df['id'], clean_df['Y2'])
+plt.show()
+#print(Correlation.correlation_toy1y2(train_data))
