@@ -182,11 +182,9 @@ class Models:
     
     def some_would_say_heavy(feature_columns, input_data, y1, y2, test_data, epsilon, n, p):
         heavy_input_features = []
-        heavy_test_features = []
         kde_models = {}
         heavy_results = {}
         sample_train = np.random.choice(input_data.shape[0], p, False)
-        sample_test = np.random.choice(test_data.shape[0], p, False)
         test_train = [index for index in range(input_data.shape[0]) if index not in sample_train]
 
         for i, col in enumerate(feature_cols):
@@ -197,13 +195,6 @@ class Models:
             heavy_input_features.append(log)
         input_heavy = np.array(heavy_input_features).T
 
-        for i, col in enumerate(feature_cols):
-            gauss = gaussian_kde(test_data[sample_test,i])
-            kde_models[col] = gauss
-            heavy = gauss.evaluate(test_data[sample_test,i])
-            log = np.log(heavy + epsilon)
-            heavy_test_features.append(log)
-        test_heavy = np.array(heavy_test_features).T
         
         models = {
             'H_Linear' : LinearRegression(),
@@ -221,11 +212,11 @@ class Models:
             y1_model = model_y1.predict(input_data[test_train])
             y2_model = model_y2.predict(input_data[test_train])
 
-            r2_y1 = r2_score(y1[test_train], y1_model)
-            r2_y2 = r2_score(y2[test_train], y2_model)
+            r2_y1 = r2_score(y1[test_train], np.exp(y1_model))
+            r2_y2 = r2_score(y2[test_train], np.exp(y2_model))
 
-            y1_pred = model_y1.predict(test_heavy)
-            y2_pred = model_y2.predict(test_heavy)
+            y1_pred = model_y1.predict(test_data)
+            y2_pred = model_y2.predict(test_data)
             pd.DataFrame({  'Y1' : y1_pred, 
                             'Y2' : y2_pred}).to_csv(f'stanley/data/heavy_{name}_preds.csv')
 
@@ -247,12 +238,54 @@ cleaned_y1 = train_df['Y1'].drop(clean_data(train_df[feature_cols])[1]).values
 cleaned_y2 = train_df['Y2'].drop(clean_data(train_df[feature_cols])[1]).values
 
 
+def caught_in_a_neural_net_iterations(input_data, y1, y2, test_data, i):
 
+    scalar_value = StandardScaler()
+    input_nn = scalar_value.fit_transform(input_data)
+    nn_results = []
 
-Models.linear_model(input_data, y1, y2, test_data)
-Models.polynomial_model(input_data, y1, y2, test_data)
-Models.lost_in_the_forest(20, input_data, y1, y2, test_data)
-Models.caught_in_a_neural_net(input_data, y1, y2, test_data)
-Models.some_would_say_heavy(feature_cols, input_data, y1, y2, test_data, 0.00001, 20, 6000)
+    nn_configs = {
+        "Small" : (50, ),
+        "Medium": (100,30),
+    }
 
+    for x in range(i):
+        half = int(input_data.shape[0]/2)
+        test_train = np.random.choice(input_data.shape[0],half, False)
+        train_train = [index for index in range(input_data.shape[0]) if index not in test_train]
+
+        for conf,layer in nn_configs.items():
+            model_y1 = MLPRegressor(hidden_layer_sizes = layer, max_iter = 350, random_state = 2025)
+            model_y2 = MLPRegressor(hidden_layer_sizes = layer, max_iter = 350, random_state = 2025)
+
+            model_y1.fit(input_nn[train_train], y1[train_train])
+            model_y2.fit(input_nn[train_train], y2[train_train])
+
+            y1_model = model_y1.predict(input_nn[test_train])
+            y2_model = model_y2.predict(input_nn[test_train])
+
+            r2_y1 = r2_score(y1[test_train], y1_model)
+            r2_y2 = r2_score(y2[test_train], y2_model)
+
+            y1_pred = model_y1.predict(test_data)
+            y2_pred = model_y2.predict(test_data)
+            
+            nn_results[i][conf] = {
+                'y1_r2'    : r2_y1,
+                'y2_r2'    : r2_y2
+            }
+    small_mean_y1r2 = np.mean(nn_results['Small']['y1_r2'])
+    small_mean_y2r2 = np.mean(nn_results['Small']['y2_r2'])
+    medium_mean_y1r2 = np.mean(nn_results['Medium']['y1_r2'])
+    medium_mean_y2r2 = np.mean(nn_results['Medium']['y2_r2'])
+    print(f'Small : Y1 R2={small_mean_y1r2}, Y2 R2={small_mean_y2r2}')
+    print(f'Medium: Y1 R2={medium_mean_y1r2}, Y2 R2={medium_mean_y2r2}')
+    return nn_results
+
+#Models.linear_model(input_data, y1, y2, test_data)
+#Models.polynomial_model(input_data, y1, y2, test_data)
+#Models.lost_in_the_forest(20, input_data, y1, y2, test_data)
+#Models.caught_in_a_neural_net(input_data, y1, y2, test_data)
+#Models.some_would_say_heavy(feature_cols, input_data, y1, y2, test_data, 0.00001, 20, 4000)
+caught_in_a_neural_net_iterations(input_data, y1, y2, test_data, 50)
 #Models.lost_in_the_forest(40, cleaned_input, cleaned_y1, cleaned_y2, test_data)

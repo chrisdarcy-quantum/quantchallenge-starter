@@ -49,9 +49,9 @@ class Correlation:
     def correlation_average(df):
         corr = Moving_average.average_at_T(df.shape[0],df)
         return Correlation.correlation_matrix(corr) 
-    def correleation(df):
+    def correlation(df):
         return df.corr()
-corr = Correlation.correlation_toy1y2(train_data)
+print(Correlation.correlation(train_data))
 
 class Test_build:
     def testing_y1(data,corr):
@@ -127,8 +127,8 @@ class Fitting_y1:
         math.log(math.exp(-0.5*((x-mu)/sigma)^2)/(math.sqrt(2*math.pi*sigma^2)), math.e)
     
     def scatters(train_data, test_data, variables):
-        max_min_mean_vol_train = np.zeros([len(variables),3])
-        max_min_mean_vol_test = np.zeros([len(variables),3])
+        max_min_mean_vol_train = np.zeros([len(variables),4])
+        max_min_mean_vol_test = np.zeros([len(variables),4])
         for var in range(len(variables)):
             plt.scatter(train_data['time'],train_data.iloc[:,var],alpha=0.2)
             plt.scatter(test_data['time'],test_data.iloc[:,var],alpha=0.2)
@@ -136,17 +136,17 @@ class Fitting_y1:
             max_min_mean_vol_train[var] = [train_data.iloc[:,var].max(),train_data.iloc[:,var].min(),train_data.iloc[:,var].mean(),train_data.iloc[:,var].std()]
             max_min_mean_vol_test[var] = [test_data.iloc[:,var].max(),test_data.iloc[:,var].min(),test_data.iloc[:,var].mean(),test_data.iloc[:,var].std()]
         return max_min_mean_vol_test, max_min_mean_vol_train
+print(Fitting_y1.scatters(train_data, test_data, variables))
+##no_clean = pd.read_csv("stanley/data/nn_Large_preds.csv")
+#no_clean_df = pd.DataFrame(no_clean)
 
-no_clean = pd.read_csv("stanley/data/nn_Large_preds.csv")
-no_clean_df = pd.DataFrame(no_clean)
+#clean = pd.read_csv("stanley/data/preds.csv")
+#clean_df = pd.DataFrame(clean)
+#plt.plot(no_clean_df['id'], no_clean_df['Y1'])
+#plt.plot(no_clean_df['id'], no_clean_df['Y2'])
+#plt.show()
 
-clean = pd.read_csv("stanley/data/preds.csv")
-clean_df = pd.DataFrame(clean)
-plt.plot(no_clean_df['id'], no_clean_df['Y1'])
-plt.plot(no_clean_df['id'], no_clean_df['Y2'])
-plt.show()
-
-plt.plot(clean_df['id'],clean_df['Y1'])
-plt.plot(clean_df['id'], clean_df['Y2'])
-plt.show()
+#plt.plot(clean_df['id'],clean_df['Y1'])
+#plt.plot(clean_df['id'], clean_df['Y2'])
+#plt.show()
 #print(Correlation.correlation_toy1y2(train_data))
