@@ -68,8 +68,8 @@ class Models:
         for degree in degrees:
             poly = PolynomialFeatures(degree=degree, include_bias=False)
             input_poly = poly.fit_transform(input_data[train_train,:])
-            train_test_poly = poly.fit_transform(input_data[test_train,:])
-            test_poly = poly.fit_transform(test_data)
+            train_test_poly = poly.transform(input_data[test_train,:])
+            test_poly = poly.transform(test_data)
 
             model_y1 = Ridge(alpha=1)
             model_y2 = Ridge(alpha=1)
@@ -142,7 +142,7 @@ class Models:
         scalar_value = StandardScaler()
         input_nn = scalar_value.fit_transform(input_data)
         nn_results = {}
-
+        test_nn = scalar_value.transform(test_data)
         nn_configs = {
             "Small" : (50, ),
             "Medium": (100,30),
@@ -166,8 +166,8 @@ class Models:
             r2_y1 = r2_score(y1[test_train], y1_model)
             r2_y2 = r2_score(y2[test_train], y2_model)
 
-            y1_pred = model_y1.predict(test_data)
-            y2_pred = model_y2.predict(test_data)
+            y1_pred = model_y1.predict(test_nn)
+            y2_pred = model_y2.predict(test_nn)
             pd.DataFrame({  'Y1' : y1_pred, 
                             'Y2' : y2_pred}).to_csv(f'stanley/data/nn_{conf}_preds.csv')
 
@@ -285,7 +285,7 @@ def caught_in_a_neural_net_iterations(input_data, y1, y2, test_data, i):
 #Models.linear_model(input_data, y1, y2, test_data)
 #Models.polynomial_model(input_data, y1, y2, test_data)
 #Models.lost_in_the_forest(20, input_data, y1, y2, test_data)
-#Models.caught_in_a_neural_net(input_data, y1, y2, test_data)
+Models.caught_in_a_neural_net(input_data, y1, y2, test_data)
 #Models.some_would_say_heavy(feature_cols, input_data, y1, y2, test_data, 0.00001, 20, 4000)
-caught_in_a_neural_net_iterations(input_data, y1, y2, test_data, 50)
+#caught_in_a_neural_net_iterations(input_data, y1, y2, test_data, 50)
 #Models.lost_in_the_forest(40, cleaned_input, cleaned_y1, cleaned_y2, test_data)
