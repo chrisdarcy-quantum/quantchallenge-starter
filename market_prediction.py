@@ -91,7 +91,7 @@ print("Final average R^2:", r2_final)
 
 
 # Now we go ahead and use test data
-test = pd.read_csv("data/test.csv").sort_values("time").sort_values("time").reset_index(drop=True)
+test = pd.read_csv("data/test.csv").sort_values("time").reset_index(drop=True)
 
 train_cols = train.columns
 
