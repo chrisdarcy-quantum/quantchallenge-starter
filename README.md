@@ -112,3 +112,6 @@ After having worked in your repository for a little, you should be able to go to
 
 ## Questions & Support
 If you have any lingering questions, reach out for support on Discord or email info@quantchallenge.org
+
+---
+*This repository is actively maintained and tested.*
